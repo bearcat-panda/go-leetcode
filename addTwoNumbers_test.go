@@ -45,9 +45,12 @@ func TestAddTwoNumbers(t *testing.T) {
 
 	result := addTwoNumbers(l1, l2)
 
-	for result == nil {
+	for {
 		fmt.Println(result.Val)
 		result = result.Next
+		if result == nil {
+			return
+		}
 	}
 
 }
@@ -59,31 +62,38 @@ type ListNode struct {
 
 func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	var result *ListNode
+	var temp *ListNode
+	temp = result
 	for {
 
-		var r *ListNode
 		if result == nil {
 			result = &ListNode{
 				Next: &ListNode{},
 			}
-			r = result
+			//r = result
+			temp = result
+		} else {
+			if temp.Next == nil {
+				temp.Next = &ListNode{}
+			}
+			temp = temp.Next
 		}
 
 		var carry int //进位
 		if l1 != nil && l2 != nil {
-			r.Val = (l1.Val + l2.Val) % 10
+			temp.Val = (l1.Val + l2.Val) % 10
 			carry = (l1.Val + l2.Val) / 10
 		} else if l1 != nil && l2 == nil {
-			r.Val = l1.Val
+			temp.Val = l1.Val
 		} else if l1 == nil && l2 != nil {
-			r.Val = l2.Val
+			temp.Val = l2.Val
 		}
 
 		if l1 == nil && l2 == nil {
 			break
 		}
 
-		r = r.Next
+		//r = r.Next
 
 		l1 = l1.Next
 		if l1 != nil {
