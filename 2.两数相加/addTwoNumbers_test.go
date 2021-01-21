@@ -1,4 +1,4 @@
-package go_leetcode
+package __两数相加
 
 import (
 	"fmt"
@@ -43,7 +43,7 @@ func TestAddTwoNumbers(t *testing.T) {
 		},
 	}
 
-	result := addTwoNumbers(l1, l2)
+	result := addTwoNumbersTwo(l1, l2)
 
 	for {
 		fmt.Println(result.Val)
@@ -63,20 +63,20 @@ type ListNode struct {
 func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	var result *ListNode
 	var temp *ListNode
-	temp = result
 	for {
 
-		if result == nil {
+		if result == nil { //第一次临时节点 = 当前节点
 			result = &ListNode{
 				Next: &ListNode{},
 			}
 			//r = result
 			temp = result
 		} else {
-			if temp.Next == nil {
-				temp.Next = &ListNode{}
+			//所有的值都不为nil 或者 0
+			if temp.Next == nil && l1 != nil && l2 != nil {
+				temp.Next = &ListNode{} //添加节点
 			}
-			temp = temp.Next
+			temp = temp.Next //走到下一个节点
 		}
 
 		var carry int //进位
@@ -89,12 +89,11 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 			temp.Val = l2.Val
 		}
 
-		if l1 == nil && l2 == nil {
+		if l1 == nil && l2 == nil && carry == 0 {
 			break
 		}
 
-		//r = r.Next
-
+		//那个节点不为空. 就添加进位
 		l1 = l1.Next
 		if l1 != nil {
 			if carry != 0 {
@@ -113,6 +112,71 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 
 	}
 	return result
+}
+
+func addTwoNumbersTwo(l1 *ListNode, l2 *ListNode) *ListNode {
+	var result *ListNode
+	var temp *ListNode
+	var carry int
+	for {
+
+		if result == nil {
+			result = &ListNode{
+				Next: &ListNode{},
+			}
+			//r = result
+			temp = result
+		} else {
+			if temp.Next == nil && l1 != nil && l2 != nil {
+				temp.Next = &ListNode{}
+			}
+			temp = temp.Next
+		}
+
+		if l1 != nil && l2 != nil {
+			temp.Val = (l1.Val + l2.Val + carry) % 10
+			carry = (l1.Val + l2.Val + carry) / 10
+		} else if l1 != nil && l2 == nil {
+			temp.Val = l1.Val
+		} else if l1 == nil && l2 != nil {
+			temp.Val = l2.Val
+		}
+
+		if l1 == nil && l2 == nil && carry == 0 {
+			break
+		}
+
+		l1 = l1.Next
+		l2 = l2.Next
+
+	}
+	return result
+}
+
+func addTwoNumbersBest(l1 *ListNode, l2 *ListNode) *ListNode {
+	head := &ListNode{}
+	n1, n2, carry, current := 0, 0, 0, head
+
+	for l1 != nil || l2 != nil || carry != 0 {
+		if l1 == nil {
+			n1 = 0
+		} else {
+			n1 = l1.Val
+			l1 = l1.Next
+		}
+
+		if l2 == nil {
+			n2 = 0
+		} else {
+			n2 = l2.Val
+			l2 = l2.Next
+		}
+
+		current.Next = &ListNode{Val: (n1 + n2 + carry) % 10}
+		current = current.Next
+		carry = (n1 + n2 + carry) / 10
+	}
+	return head.Next
 }
 
 //leetcode submit region end(Prohibit modification and deletion)
