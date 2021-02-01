@@ -1,4 +1,4 @@
-package go_leetcode
+package __两数之和
 
 import (
 	"fmt"
@@ -35,7 +35,7 @@ func twoSum(nums []int, target int) []int {
 	for i, v := range nums {
 		numsMp[v] = i
 	}
-
+	//两个键的值是需要的. 添加下标
 	for k, v1 := range numsMp {
 		if v2, ok := numsMp[target-k]; ok {
 			result = append(result, v1)
