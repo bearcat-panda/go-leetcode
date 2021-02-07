@@ -1,5 +1,10 @@
 package _2_整数转罗马数字
 
+import (
+	"fmt"
+	"testing"
+)
+
 //罗马数字包含以下七种字符： I， V， X， L，C，D 和 M。
 //
 //
@@ -69,7 +74,35 @@ package _2_整数转罗马数字
 // Related Topics 数学 字符串
 // 👍 481 👎 0
 
-//leetcode submit region begin(Prohibit modification and deletion)
+func TestIntToRoman(t *testing.T) {
+	var s = 3
+	fmt.Println(intToRoman(s) == "III", "III", intToRoman(s))
+	fmt.Println(intToRomanOne(s) == "III", "III", intToRomanOne(s))
+
+	s = 4
+	fmt.Println(intToRoman(s) == "IV", "IV", intToRoman(s))
+	fmt.Println(intToRomanOne(s) == "IV", "IV", intToRomanOne(s))
+
+	s = 9
+	fmt.Println(intToRoman(s) == "IX", "IX", intToRoman(s))
+	fmt.Println(intToRomanOne(s) == "IX", "IX", intToRomanOne(s))
+
+	s = 58
+	fmt.Println(intToRoman(s) == "LVIII", "LVIII", intToRoman(s))
+	fmt.Println(intToRomanOne(s) == "LVIII", "LVIII", intToRomanOne(s))
+
+	s = 1994
+	fmt.Println(intToRoman(s) == "MCMXCIV", "MCMXCIV", intToRoman(s))
+	fmt.Println(intToRomanOne(s) == "MCMXCIV", "MCMXCIV", intToRomanOne(s))
+
+}
+
+//我写的会做个因式分解. 是从低位开始计算
+
+//因式分解
+//怎么分解
+// 3 > 1 && 3 %1 != 1; 3-1=2
+// 2>1...
 func intToRoman(num int) string {
 	//I             1
 	//V             5
@@ -81,21 +114,6 @@ func intToRoman(num int) string {
 	// I 可以放在 V (5) 和 X (10) 的左边，来表示 4 和 9。
 	// X 可以放在 L (50) 和 C (100) 的左边，来表示 40 和 90。
 	// C 可以放在 D (500) 和 M (1000) 的左边，来表示 400 和 900。
-
-	var maps = make(map[string]int)
-	maps["I"] = 1
-	maps["IV"] = 4
-	maps["V"] = 5
-	maps["IX"] = 9
-	maps["X"] = 10
-	maps["XL"] = 40
-	maps["L"] = 50
-	maps["XC"] = 90
-	maps["C"] = 100
-	maps["CD"] = 400
-	maps["D"] = 500
-	maps["CM"] = 900
-	maps["M"] = 1000
 
 	var mapInt = make(map[int]string)
 	mapInt[1] = "I"
@@ -111,8 +129,71 @@ func intToRoman(num int) string {
 	mapInt[500] = "D"
 	mapInt[900] = "CM"
 	mapInt[1000] = "M"
-	//因式分解
 
+	var res string
+	for num != 0 {
+		for k, v := range mapInt {
+			if num == k {
+				res = v + res
+				return res
+			}
+		}
+
+		remainder := num % 10 //余数
+		if remainder == 0 {
+			remainder = num % 100
+		}
+		if remainder == 0 {
+			remainder = num % 1000
+		}
+
+		num -= remainder
+		var count int //外层计数器
+
+		var min int
+	LABEL:
+		for k, _ := range mapInt {
+			//先找到最合适的数
+			if k <= remainder && k >= min {
+				min = k
+			}
+		}
+
+		if count == 0 { //新的数
+			res = mapInt[min] + res
+		} else { //余数还没有计算完成
+			res = res + mapInt[min]
+		}
+		count++
+
+		if remainder > 0 {
+			remainder -= min //剩余的数
+			min = 0
+			goto LABEL
+		}
+
+	}
+
+	return res
 }
 
-//leetcode submit region end(Prohibit modification and deletion)
+//从高位进行计算
+//找到最大的. 减去.  依次计算
+func intToRomanOne(num int) string {
+	roman := []string{"I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M"}
+	intSlice := []int{1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000}
+
+	var res string
+
+	for num != 0 {
+
+		for i := len(intSlice) - 1; i >= 0; i-- {
+			if intSlice[i] <= num {
+				res += roman[i]
+				num -= intSlice[i]
+			}
+		}
+	}
+
+	return res
+}
